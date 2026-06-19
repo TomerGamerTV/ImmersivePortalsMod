@@ -9,25 +9,27 @@ on:
 
 jobs:
   build:
-    strategy:
-      matrix:
-        java: [25]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Java ${{ matrix.java }}
+      - name: Setup Java (Gradle Runtime & Toolchain)
         uses: actions/setup-java@v4
         with:
           distribution: 'microsoft'
-          java-version: ${{ matrix.java }}
+          java-version: |
+            21
+            25
+          cache: 'gradle'
 
       - name: Make Gradle Wrapper Executable
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew build
+        env:
+          JAVA_HOME: ${{ env.JAVA_HOME_21_X64 }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
