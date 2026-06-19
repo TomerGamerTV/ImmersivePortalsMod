@@ -1,0 +1,37 @@
+name: Build Minecraft 26.1.2 Mod
+on:
+  push:
+    branches:
+      - '26.1.2'
+  pull_request:
+    branches:
+      - '26.1.2'
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        java: [21]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java ${{ matrix.java }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'microsoft'
+          java-version: ${{ matrix.java }}
+
+      - name: Make Gradle Wrapper Executable
+        run: chmod +x gradlew
+
+      - name: Build with Gradle
+        run: ./gradlew build
+
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ImmersivePortals-MC26.1.2
+          path: build/libs/*.jar
+          if-no-files-found: error
